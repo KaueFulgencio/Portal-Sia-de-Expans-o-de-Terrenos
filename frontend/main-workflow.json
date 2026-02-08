@@ -1,0 +1,604 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o",
+                    "mode": "list",
+                    "cachedResultName": "Portal_SIA_Seazone",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 574305683,
+                    "mode": "list",
+                    "cachedResultName": "Corretores ",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit#gid=574305683"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                208,
+                0
+            ],
+            "id": "656f889e-1540-45de-8018-3904e37069c5",
+            "name": "Get row(s) in sheet",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "t9Kih5odqRH3zYof",
+                    "name": "Google Sheets account"
+                }
+            },
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "sia-webhook",
+                "responseMode": "responseNode",
+                "options": {
+                    "allowedOrigins": "*",
+                    "responseHeaders": {
+                        "entries": [
+                            {
+                                "name": "Access-Control-Allow-Origin",
+                                "value": "*"
+                            },
+                            {
+                                "name": "Access-Control-Allow-Methods",
+                                "value": "GET, POST, PUT, DELETE, OPTIONS"
+                            },
+                            {
+                                "name": "Access-Control-Allow-Headers",
+                                "value": "Content-Type, Authorization"
+                            }
+                        ]
+                    }
+                }
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                416,
+                0
+            ],
+            "id": "6053a9e4-5662-4b48-b5da-bf1b3f96a06f",
+            "name": "Webhook",
+            "webhookId": "8160f34e-dc4c-466e-8b02-39cafce09c3d",
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "2a888257-6961-466a-904d-a9da52c6d3dc",
+            "name": "When clicking ‘Execute workflow’"
+        },
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o",
+                    "mode": "list",
+                    "cachedResultName": "Portal_SIA_Seazone",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 574305683,
+                    "mode": "list",
+                    "cachedResultName": "Corretores ",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit#gid=574305683"
+                },
+                "filtersUI": {
+                    "values": [
+                        {
+                            "lookupColumn": "Email",
+                            "lookupValue": "={{ $('Webhook').item.json.body.brokerEmail }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                832,
+                0
+            ],
+            "id": "b4104682-de76-41aa-b283-c1309402fc28",
+            "name": "Get row(s) in sheet1",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "t9Kih5odqRH3zYof",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "ce39b197-e232-4e41-86f3-54dd9f784c07",
+                            "leftValue": "={{$items(\"Get row(s) in sheet1\").length}}",
+                            "rightValue": 0,
+                            "operator": {
+                                "type": "number",
+                                "operation": "gt"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1040,
+                0
+            ],
+            "id": "e66c7bb4-09b0-4eed-878e-a395a8392233",
+            "name": "If"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "{\n  \"prioridade\": \"baixa\",\n  \"mensagem\": \"Corretor não encontrado. Por favor, cadastre seu e-mail antes de enviar oportunidades.\"\n}\n",
+                "options": {
+                    "responseCode": 200
+                }
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                1280,
+                112
+            ],
+            "id": "3d42309c-bb7e-4595-ab72-49ba1b4d67bf",
+            "name": "Respond to Webhook1"
+        },
+        {
+            "parameters": {
+                "jsCode": "const webhookItem = $items('Webhook')[0].json;\n\n// texto normalizado\nconst texto = (webhookItem.body.terrainDescription || '')\n  .toLowerCase()\n  .normalize('NFD')\n  .replace(/[\\u0300-\\u036f]/g, '');\n\n// cidades vindas da planilha (NODE CERTO + COLUNA CERTA)\nconst cidadesSheet = $items('Get row(s) in sheet2').map(item =>\n  item.json.Cidades.trim()\n);\n\n// normaliza cidades da planilha\nconst cidadesNormalizadas = cidadesSheet.map(c =>\n  c.toLowerCase()\n   .normalize('NFD')\n   .replace(/[\\u0300-\\u036f]/g, '')\n);\n\n// detecta cidade\n// detecta cidade prioritária\nlet cidade = null;\nlet cidadePrioritaria = false;\n\nfor (let i = 0; i < cidadesNormalizadas.length; i++) {\n  if (texto.includes(cidadesNormalizadas[i])) {\n    cidade = cidadesSheet[i];\n    cidadePrioritaria = true;\n    break;\n  }\n}\n\n// fallback: tenta pegar cidade \"livre\" do texto\nif (!cidade) {\n  const matchCidade = texto.match(/\\bem\\s+([a-z\\s]+)/i);\n  cidade = matchCidade ? matchCidade[1].trim() : null;\n}\n\n// área\nconst areaMatch = texto.match(/(\\d+)\\s?m2/);\nconst area = areaMatch ? Number(areaMatch[1]) : null;\n\n// valor\nlet valor = null;\n\nconst valorMatch = texto.match(/(\\d+(?:[.,]\\d+)?)\\s?(mil|milhao|milhoes|milh|mi)\\b/);\n\nif (valorMatch) {\n  const numero = Number(valorMatch[1].replace(',', '.'));\n  const unidade = valorMatch[2];\n\n  if (unidade === 'mil') {\n    valor = numero * 1_000;\n  } else {\n    valor = numero * 1_000_000;\n  }\n}\n\n// prioridade\nconst prioridade = cidadePrioritaria ? 'alta' : 'baixa';\n\nreturn [\n  {\n    json: {\n      cidade,\n      area,\n      valor,\n      valorPorM2: area && valor ? Math.round(valor / area) : null,\n      prioridade,\n      inputOriginal: webhookItem.body.terrainDescription\n    }\n  }\n];\n\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1680,
+                -48
+            ],
+            "id": "b628ecff-6e0c-45db-9876-4ec55cc46427",
+            "name": "Code in JavaScript"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o",
+                    "mode": "list",
+                    "cachedResultName": "Portal_SIA_Seazone",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 356330597,
+                    "mode": "list",
+                    "cachedResultName": "Oportunidades",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit#gid=356330597"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Data": "={{new Date().toISOString()}}",
+                        "Corretor": "={{ $items(\"Get row(s) in sheet1\")[0].json.Nome }}",
+                        "Email": "={{ $items(\"Get row(s) in sheet1\")[0].json.Email }}",
+                        "Cidade": "={{$json.cidade}}",
+                        "Área": "={{$json.area}}",
+                        "Valor": "={{$json.valor}}",
+                        "Valor_m1": "={{$json.valorPorM2}}",
+                        "Prioridade": "={{$json.prioridade}}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "Data",
+                            "displayName": "Data",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Corretor",
+                            "displayName": "Corretor",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Email",
+                            "displayName": "Email",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Cidade",
+                            "displayName": "Cidade",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Área",
+                            "displayName": "Área",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Valor",
+                            "displayName": "Valor",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Valor_m1",
+                            "displayName": "Valor_m1",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Prioridade",
+                            "displayName": "Prioridade",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                1856,
+                -48
+            ],
+            "id": "89b2a66c-7090-490d-97d4-307b842621f2",
+            "name": "Append row in sheet",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "t9Kih5odqRH3zYof",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o",
+                    "mode": "list",
+                    "cachedResultName": "Portal_SIA_Seazone",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 1276521009,
+                    "mode": "list",
+                    "cachedResultName": "Logs",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit#gid=1276521009"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Timestamp": "={{new Date().toISOString()}}",
+                        "Decisao_Sia": "={{ $json.Prioridade }}",
+                        "Input Original": "={{ $item(0).$node[\"Code in JavaScript\"].json.inputOriginal }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "Timestamp",
+                            "displayName": "Timestamp",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Decisao_Sia",
+                            "displayName": "Decisao_Sia",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Input Original",
+                            "displayName": "Input Original",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                2064,
+                -48
+            ],
+            "id": "a3b4f815-65cc-425d-86af-d080d30743f7",
+            "name": "Append row in sheet1",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "t9Kih5odqRH3zYof",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"prioridade\": \"{{$node['Code in JavaScript'].json.prioridade}}\",\n  \"detalhes\": {\n    \"cidade\": \"{{$node['Code in JavaScript'].json.cidade}}\",\n    \"area\": \"{{$node['Code in JavaScript'].json.area}}\",\n    \"valor\": \"{{$node['Code in JavaScript'].json.valor}}\",\n    \"valorPorM2\": \"{{$node['Code in JavaScript'].json.valorPorM2}}\"\n  }\n}\n",
+                "options": {
+                    "responseCode": 200
+                }
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                2272,
+                -48
+            ],
+            "id": "51f4f44b-ac2f-46e0-9084-a6bfbf515237",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "e7f21912-414a-40b0-80b6-4c0d5ad21055",
+                            "name": "body.terrainDescription",
+                            "value": "={{ $json.body.terrainDescription }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                624,
+                0
+            ],
+            "id": "04f6d5b5-ec4a-4019-9b64-e928d571f4b9",
+            "name": "Edit Fields"
+        },
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o",
+                    "mode": "list",
+                    "cachedResultName": "Portal_SIA_Seazone",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 1726478293,
+                    "mode": "list",
+                    "cachedResultName": "Cidades_Prioritarias ",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IO61uTAbQtS4hCr8aL-io-qaAzPGDWV9vdP1B-m0R7o/edit#gid=1726478293"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                1472,
+                -64
+            ],
+            "id": "99b3c320-67d7-4eeb-822f-eacd98f73fc8",
+            "name": "Get row(s) in sheet2",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "t9Kih5odqRH3zYof",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.limit",
+            "typeVersion": 1,
+            "position": [
+                1280,
+                -80
+            ],
+            "id": "9a3327c6-72e0-48d5-bdc3-1bc67f8bc063",
+            "name": "Limit"
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Edit Fields",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "When clicking ‘Execute workflow’": {
+            "main": [
+                [
+                    {
+                        "node": "Get row(s) in sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get row(s) in sheet1": {
+            "main": [
+                [
+                    {
+                        "node": "If",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "If": {
+            "main": [
+                [
+                    {
+                        "node": "Limit",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond to Webhook1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code in JavaScript": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Append row in sheet": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Append row in sheet1": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Fields": {
+            "main": [
+                [
+                    {
+                        "node": "Get row(s) in sheet1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get row(s) in sheet2": {
+            "main": [
+                [
+                    {
+                        "node": "Code in JavaScript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Limit": {
+            "main": [
+                [
+                    {
+                        "node": "Get row(s) in sheet2",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "1687c7e6c86ac543ce23b3dbf2c36f0122e4691c6ff9b8e6dbe81b802543962f"
+    }
+}
